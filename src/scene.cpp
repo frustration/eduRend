@@ -51,7 +51,9 @@ void OurTestScene::Init()
 	// Create objects
 	m_quad = new QuadModel(m_dxdevice, m_dxdevice_context);
 	m_sponza = new OBJModel("assets/crytek-sponza/sponza.obj", m_dxdevice, m_dxdevice_context);
-	m_cube = new Cube(m_dxdevice, m_dxdevice_context);
+	m_sun = new Cube(m_dxdevice, m_dxdevice_context);
+	m_earth = new Cube(m_dxdevice, m_dxdevice_context);
+	m_moon = new Cube(m_dxdevice, m_dxdevice_context);
 }
 
 //
@@ -78,13 +80,13 @@ void OurTestScene::Update(
 	if(input_handler.IsKeyPressed(Keys::Esc))
 		PostQuitMessage(0);
 
+	m_camera->UpdateRotation(input_handler.GetMouseDeltaX(), input_handler.GetMouseDeltaY());
+
 	// Now set/update object transformations
 	// This can be done using any sequence of transformation matrices,
 	// but the T*R*S order is most common; i.e. scale, then rotate, and then translate.
 	// If no transformation is desired, an identity matrix can be obtained 
-	// via e.g. Mquad = linalg::mat4f_identity; 
-
-	// Quad model-to-world transformation
+	// via e.g. Mquad = linalg::mat4f_identity; 	// Quad model-to-world transformation
 	m_quad_transform = mat4f::translation(0, 0, 0) *			// No translation
 		mat4f::rotation(-m_angle, 0.0f, 1.0f, 0.0f) *	// Rotate continuously around the y-axis
 		mat4f::scaling(1.5, 1.5, 1.5);				// Scale uniformly to 150%
@@ -94,9 +96,12 @@ void OurTestScene::Update(
 		mat4f::rotation(fPI / 2, 0.0f, 1.0f, 0.0f) * // Rotate pi/2 radians (90 degrees) around y
 		mat4f::scaling(0.05f);						 // The scene is quite large so scale it down to 5%
 
-	m_cube_transform = mat4f::translation(0, 0, 0) *			// No translation
-		mat4f::rotation(-m_angle, 0.0f, 1.0f, 0.0f) *	// Rotate continuously around the y-axis
-		mat4f::scaling(1.5, 1.5, 1.5);				// Scale uniformly to 150%
+	static float orbit = 0.f;
+	orbit += 1.f * dt;
+
+	m_sun_transform = mat4f::translation(0, 0, 0) * mat4f::scaling(1.5f);
+	m_earth_transform = m_sun_transform * mat4f::rotation(0.f, orbit, 0.0f ) * mat4f::translation(3.f, 0.f, 0) * mat4f::scaling(0.5f);
+	m_moon_transform = m_earth_transform * mat4f::rotation(0.f, orbit, 0.0f ) * mat4f::translation(3.f, 0.f, 0) * mat4f::scaling(0.5f);
 
 	// Increment the rotation angle.
 	m_angle += m_angular_velocity * dt;
@@ -125,14 +130,20 @@ void OurTestScene::Render()
 
 	// Load matrices + the Quad's transformation to the device and render it
 	UpdateTransformationBuffer(m_quad_transform, m_view_matrix, m_projection_matrix);
-	m_quad->Render();
+	//m_quad->Render();
 
 	// Load matrices + Sponza's transformation to the device and render it
 	UpdateTransformationBuffer(m_sponza_transform, m_view_matrix, m_projection_matrix);
 	m_sponza->Render();
 
-	UpdateTransformationBuffer(m_cube_transform, m_view_matrix, m_projection_matrix);
-	m_cube->Render();
+	UpdateTransformationBuffer(m_sun_transform, m_view_matrix, m_projection_matrix);
+	m_sun->Render();
+
+	UpdateTransformationBuffer(m_earth_transform, m_view_matrix, m_projection_matrix);
+	m_earth->Render();
+
+	UpdateTransformationBuffer(m_moon_transform, m_view_matrix, m_projection_matrix);
+	m_moon->Render();
 }
 
 void OurTestScene::Release()

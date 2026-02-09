@@ -9,47 +9,79 @@ Cube::Cube(
 	std::vector<Vertex> vertices;
 	std::vector<unsigned> indices;
 
-	Vertex v;
+	const float s = 0.5f;
 
-	v.Position = { -0.5f, -0.5f, -0.5f }; v.Normal = { 0, 0, -1 }; v.TexCoord = { 0, 1 }; vertices.push_back(v);
-	v.Position = { 0.5f, -0.5f, -0.5f };  v.Normal = { 0, 0, -1 }; v.TexCoord = { 1, 1 }; vertices.push_back(v);
-	v.Position = { 0.5f, 0.5f, -0.5f };   v.Normal = { 0, 0, -1 }; v.TexCoord = { 1, 0 }; vertices.push_back(v);
-	v.Position = { -0.5f, 0.5f, -0.5f };  v.Normal = { 0, 0, -1 }; v.TexCoord = { 0, 0 }; vertices.push_back(v);
-
-	v.Position = { -0.5f, -0.5f, 0.5f };  v.Normal = { 0, 0, 1 }; v.TexCoord = { 0, 1 }; vertices.push_back(v);
-	v.Position = { 0.5f, -0.5f, 0.5f };   v.Normal = { 0, 0, 1 }; v.TexCoord = { 1, 1 }; vertices.push_back(v);
-	v.Position = { 0.5f, 0.5f, 0.5f };    v.Normal = { 0, 0, 1 }; v.TexCoord = { 1, 0 }; vertices.push_back(v);
-	v.Position = { -0.5f, 0.5f, 0.5f };   v.Normal = { 0, 0, 1 }; v.TexCoord = { 0, 0 }; vertices.push_back(v);
-
-	v.Position = { -0.5f, 0.5f, 0.5f };   v.Normal = { -1, 0, 0 }; v.TexCoord = { 1, 0 }; vertices.push_back(v);
-	v.Position = { -0.5f, 0.5f, -0.5f };  v.Normal = { -1, 0, 0 }; v.TexCoord = { 0, 0 }; vertices.push_back(v);
-	v.Position = { -0.5f, -0.5f, -0.5f }; v.Normal = { -1, 0, 0 }; v.TexCoord = { 0, 1 }; vertices.push_back(v);
-	v.Position = { -0.5f, -0.5f, 0.5f };  v.Normal = { -1, 0, 0 }; v.TexCoord = { 1, 1 }; vertices.push_back(v);
-
-	v.Position = { 0.5f, 0.5f, 0.5f };    v.Normal = { 1, 0, 0 }; v.TexCoord = { 1, 0 }; vertices.push_back(v);
-	v.Position = { 0.5f, 0.5f, -0.5f };   v.Normal = { 1, 0, 0 }; v.TexCoord = { 0, 0 }; vertices.push_back(v);
-	v.Position = { 0.5f, -0.5f, -0.5f };  v.Normal = { 1, 0, 0 }; v.TexCoord = { 0, 1 }; vertices.push_back(v);
-	v.Position = { 0.5f, -0.5f, 0.5f };   v.Normal = { 1, 0, 0 }; v.TexCoord = { 1, 1 }; vertices.push_back(v);
-
-	v.Position = { -0.5f, -0.5f, -0.5f }; v.Normal = { 0, -1, 0 }; v.TexCoord = { 0, 1 }; vertices.push_back(v);
-	v.Position = { 0.5f, -0.5f, -0.5f };  v.Normal = { 0, -1, 0 }; v.TexCoord = { 1, 1 }; vertices.push_back(v);
-	v.Position = { 0.5f, -0.5f, 0.5f };   v.Normal = { 0, -1, 0 }; v.TexCoord = { 1, 0 }; vertices.push_back(v);
-	v.Position = { -0.5f, -0.5f, 0.5f };  v.Normal = { 0, -1, 0 }; v.TexCoord = { 0, 0 }; vertices.push_back(v);
-
-	v.Position = { -0.5f, 0.5f, -0.5f };  v.Normal = { 0, 1, 0 }; v.TexCoord = { 0, 1 }; vertices.push_back(v);
-	v.Position = { 0.5f, 0.5f, -0.5f };   v.Normal = { 0, 1, 0 }; v.TexCoord = { 1, 1 }; vertices.push_back(v);
-	v.Position = { 0.5f, 0.5f, 0.5f };    v.Normal = { 0, 1, 0 }; v.TexCoord = { 1, 0 }; vertices.push_back(v);
-	v.Position = { -0.5f, 0.5f, 0.5f };   v.Normal = { 0, 1, 0 }; v.TexCoord = { 0, 0 }; vertices.push_back(v);
-
-	for (unsigned i = 0; i < 6; i++)
+	auto AddFace = [&](Vertex v0, Vertex v1, Vertex v2, Vertex v3)
 	{
-		unsigned base = i * 4;
+		unsigned base = (unsigned)vertices.size();
+
+		vertices.push_back(v0);
+		vertices.push_back(v1);
+		vertices.push_back(v2);
+		vertices.push_back(v3);
+
 		indices.push_back(base + 0);
-		indices.push_back(base + 2);
 		indices.push_back(base + 1);
-		indices.push_back(base + 0);
 		indices.push_back(base + 3);
+
+		indices.push_back(base + 1);
 		indices.push_back(base + 2);
+		indices.push_back(base + 3);
+	};
+
+	{
+		Vertex v0, v1, v2, v3;
+		v0.Position = { -s, -s,  s }; v0.Normal = { 0, 0, 1 }; v0.TexCoord = { 0, 1 };
+		v1.Position = { s, -s,  s }; v1.Normal = { 0, 0, 1 }; v1.TexCoord = { 1, 1 };
+		v2.Position = { s,  s,  s }; v2.Normal = { 0, 0, 1 }; v2.TexCoord = { 1, 0 };
+		v3.Position = { -s,  s,  s }; v3.Normal = { 0, 0, 1 }; v3.TexCoord = { 0, 0 };
+
+		AddFace(v0, v1, v2, v3);
+	}
+
+	{
+		Vertex v0, v1, v2, v3;
+		v0.Position = { s, -s, -s }; v0.Normal = { 0, 0, -1 }; v0.TexCoord = { 0, 1 };
+		v1.Position = { -s, -s, -s }; v1.Normal = { 0, 0, -1 }; v1.TexCoord = { 1, 1 };
+		v2.Position = { -s,  s, -s }; v2.Normal = { 0, 0, -1 }; v2.TexCoord = { 1, 0 };
+		v3.Position = { s,  s, -s }; v3.Normal = { 0, 0, -1 }; v3.TexCoord = { 0, 0 };
+		AddFace(v0, v1, v2, v3);
+	}
+
+	{
+		Vertex v0, v1, v2, v3;
+		v0.Position = { s, -s,  s }; v0.Normal = { 1, 0, 0 }; v0.TexCoord = { 0, 1 };
+		v1.Position = { s, -s, -s }; v1.Normal = { 1, 0, 0 }; v1.TexCoord = { 1, 1 };
+		v2.Position = { s,  s, -s }; v2.Normal = { 1, 0, 0 }; v2.TexCoord = { 1, 0 };
+		v3.Position = { s,  s,  s }; v3.Normal = { 1, 0, 0 }; v3.TexCoord = { 0, 0 };
+		AddFace(v0, v1, v2, v3);
+	}
+
+	{
+		Vertex v0, v1, v2, v3;
+		v0.Position = { -s, -s, -s }; v0.Normal = { -1, 0, 0 }; v0.TexCoord = { 0, 1 };
+		v1.Position = { -s, -s,  s }; v1.Normal = { -1, 0, 0 }; v1.TexCoord = { 1, 1 };
+		v2.Position = { -s,  s,  s }; v2.Normal = { -1, 0, 0 }; v2.TexCoord = { 1, 0 };
+		v3.Position = { -s,  s, -s }; v3.Normal = { -1, 0, 0 }; v3.TexCoord = { 0, 0 };
+		AddFace(v0, v1, v2, v3);
+	}
+
+	{
+		Vertex v0, v1, v2, v3;
+		v0.Position = { -s,  s,  s }; v0.Normal = { 0, 1, 0 }; v0.TexCoord = { 0, 1 };
+		v1.Position = { s,  s,  s }; v1.Normal = { 0, 1, 0 }; v1.TexCoord = { 1, 1 };
+		v2.Position = { s,  s, -s }; v2.Normal = { 0, 1, 0 }; v2.TexCoord = { 1, 0 };
+		v3.Position = { -s,  s, -s }; v3.Normal = { 0, 1, 0 }; v3.TexCoord = { 0, 0 };
+		AddFace(v0, v1, v2, v3);
+	}
+
+	{
+		Vertex v0, v1, v2, v3;
+		v0.Position = { -s, -s, -s }; v0.Normal = { 0, -1, 0 }; v0.TexCoord = { 0, 1 };
+		v1.Position = { s, -s, -s }; v1.Normal = { 0, -1, 0 }; v1.TexCoord = { 1, 1 };
+		v2.Position = { s, -s,  s }; v2.Normal = { 0, -1, 0 }; v2.TexCoord = { 1, 0 };
+		v3.Position = { -s, -s,  s }; v3.Normal = { 0, -1, 0 }; v3.TexCoord = { 0, 0 };
+		AddFace(v0, v1, v2, v3);
 	}
 
 	D3D11_BUFFER_DESC vertexbufferDesc{ 0 };

@@ -87,7 +87,24 @@ OBJModel::OBJModel(
 }
 
 void OBJModel::Render() const
-{
+{		
+	static D3D11_SAMPLER_DESC sampDesc = {};
+	static 		ID3D11SamplerState* samplerState = nullptr;
+
+	static bool test = false;
+	if (!test) {
+		sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+		sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+		sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+		sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+		sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+		sampDesc.MinLOD = 0;
+		sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+		m_dxdevice->CreateSamplerState(&sampDesc, &samplerState);
+		test = true;
+	}
+
 	// Bind vertex buffer
 	const UINT32 stride = sizeof(Vertex);
 	const UINT32 offset = 0;
@@ -102,7 +119,8 @@ void OBJModel::Render() const
 		// Fetch material
 		const Material& material = m_materials[indexRange.MaterialIndex];
 
-		// Bind diffuse texture to slot t0 of the PS
+		// Bind diffuse texture to slot t0 of the PSm_dxdevice_context->PSSetSamplers(0, 1, &samplerState);
+		m_dxdevice_context->PSSetSamplers(0, 1, &samplerState);
 		m_dxdevice_context->PSSetShaderResources(0, 1, &material.DiffuseTexture.TextureView);
 		// + bind other textures here, e.g. a normal map, to appropriate slots
 
